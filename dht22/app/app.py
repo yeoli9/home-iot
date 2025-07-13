@@ -3,19 +3,25 @@ from prometheus_client import Gauge, generate_latest, CONTENT_TYPE_LATEST
 import board
 import adafruit_dht
 import time
+import os
 
 app = FastAPI()
 
 # Prometheus 메트릭 정의
-temperature_gauge = Gauge('dht22_temperature_celsius', 'Temperature from DHT22 sensor')
+temperature_gauge = Gauge('dht22_temperature_celsius',
+                          'Temperature from DHT22 sensor')
 humidity_gauge = Gauge('dht22_humidity_percent', 'Humidity from DHT22 sensor')
 
 # 센서 초기화
-dht_device = adafruit_dht.DHT22(board.D4)
+
+pin_number = int(os.getenv("DHT_GPIO_PIN", "24"))
+dht_device = adafruit_dht.DHT22(getattr(board, f"D{pin_number}"))
+
 
 @app.get("/")
 def root():
     return {"message": "DHT22 Prometheus Exporter"}
+
 
 @app.get("/metrics")
 def metrics():
@@ -29,4 +35,3 @@ def metrics():
     except RuntimeError as e:
         print(f"Sensor read error: {e}")
     return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
-

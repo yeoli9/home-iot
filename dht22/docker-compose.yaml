@@ -1,12 +1,14 @@
-version: '3.8'
+version: "3.8"
 
 services:
   temp-humid:
     build: .
     container_name: temp-humid
-    privileged: true          # GPIO 접근을 위해 필요
+    privileged: true # GPIO 접근을 위해 필요
+    environment:
+      - DHT_GPIO_PIN=24
     volumes:
-      - ./:/app               # 코드 및 설정 파일 실시간 반영
+      - ./:/app # 코드 및 설정 파일 실시간 반영
     restart: unless-stopped
   prometheus:
     image: prom/prometheus
@@ -14,7 +16,7 @@ services:
     volumes:
       - ./prometheus.yaml:/etc/prometheus/prometheus.yml
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
+      - "--config.file=/etc/prometheus/prometheus.yml"
     ports:
       - "9090:9090"
     restart: unless-stopped
