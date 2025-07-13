@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  ir-api:
+    build: .
+    container_name: ir-api
+    privileged: true          # GPIO 접근을 위해 필요
+    volumes:
+      - ./:/app               # 코드 및 설정 파일 실시간 반영
+    network_mode: "host"
+    environment:
+      PIGPIO_ADDR: 127.0.0.1
+      PIGPIO_PORT: 8888
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
